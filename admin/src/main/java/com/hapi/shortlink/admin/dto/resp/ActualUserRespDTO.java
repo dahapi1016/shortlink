@@ -1,14 +1,9 @@
 package com.hapi.shortlink.admin.dto.resp;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.hapi.shortlink.admin.common.serialize.PhoneDesensitizationSerializer;
 import lombok.Data;
 
-/**
- * 用户响应实体
- */
 @Data
-public class UserRespDTO {
+public class ActualUserRespDTO {
 
 
     private Long id;
@@ -31,6 +26,5 @@ public class UserRespDTO {
     /**
      * 手机号
      */
-    @JsonSerialize(using = PhoneDesensitizationSerializer.class)
     private String phone;
 }
