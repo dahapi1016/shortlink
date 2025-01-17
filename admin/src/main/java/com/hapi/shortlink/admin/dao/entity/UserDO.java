@@ -1,11 +1,8 @@
 package com.hapi.shortlink.admin.dao.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,9 +10,7 @@ import java.util.Date;
  */
 @Data
 @TableName("t_user")
-public class UserDO implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class UserDO  {
 
     @TableId(type = IdType.AUTO)
     /*
@@ -56,16 +51,19 @@ public class UserDO implements Serializable {
     /**
      * 注册时间
      */
+    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
     /**
      * 修改时间
      */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
 
     /**
      * 注销标志位，0：未注销，1：已注销
      */
+    @TableField(fill = FieldFill.INSERT)
     private Integer delFlag;
 
     public UserDO() {}
