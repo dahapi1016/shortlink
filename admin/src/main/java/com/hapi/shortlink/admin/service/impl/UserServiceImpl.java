@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hapi.shortlink.admin.common.convention.exception.ClientException;
 import com.hapi.shortlink.admin.common.convention.exception.ServiceException;
+import com.hapi.shortlink.admin.common.user.UserContext;
 import com.hapi.shortlink.admin.dao.entity.UserDO;
 import com.hapi.shortlink.admin.dao.mapper.UserMapper;
 import com.hapi.shortlink.admin.dto.req.UserLoginReqDTO;
@@ -24,6 +25,9 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import static com.hapi.shortlink.admin.common.constant.RedisCacheConstant.LOCK_USER_REGISTER_KEY;
 import static com.hapi.shortlink.admin.common.constant.RedisCacheConstant.USER_LOGIN_KEY;
@@ -84,7 +88,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
 
     @Override
     public void update(UserUpdateReqDTO requestParam) {
-        //TODO 检查要修改的用户名是否为已登录的用户名
+        if(!Objects.equals(requestParam.getUsername(), UserContext.getUsername())) {
+            throw new ServiceException("用户无权限！");
+        }
         LambdaUpdateWrapper<UserDO> updateWrapper = Wrappers.lambdaUpdate(UserDO.class).
                 eq(UserDO::getUsername, requestParam.getUsername());
         baseMapper.update(BeanUtil.toBean(requestParam, UserDO.class), updateWrapper);
@@ -112,11 +118,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
         String userToken = UUID.randomUUID().toString();
         String userInfoJSON = JSON.toJSONString(userDO);
         stringRedisTemplate.opsForHash().put(USER_LOGIN_KEY + userDO.getUsername(), userToken, userInfoJSON);
+        stringRedisTemplate.expire(USER_LOGIN_KEY + userDO.getUsername(), 72, TimeUnit.HOURS);
         return new UserLoginRespDTO(userToken);
     }
 
     @Override
     public boolean isLogged(String username, String token) {
         return stringRedisTemplate.opsForHash().get(USER_LOGIN_KEY + username, token) != null;
+    }
+
+    @Override
+    public void logOut(String username, String token) {
+        if(isLogged(username, token)) {
+            stringRedisTemplate.delete(USER_LOGIN_KEY + username);
+            return;
+        }
+        throw new ServiceException("用户未登录！");
     }
 }

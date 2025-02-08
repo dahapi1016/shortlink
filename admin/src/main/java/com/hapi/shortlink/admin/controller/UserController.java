@@ -12,17 +12,15 @@ import com.hapi.shortlink.admin.dto.resp.UserRespDTO;
 import com.hapi.shortlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.HandlerMapping;
 
 /**
- * 用户管理控制层
+ * 用户管理接口
  */
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
-    private final HandlerMapping resourceHandlerMapping;
 
     /**
      * 根据用户名返回脱敏后用户信息
@@ -31,6 +29,7 @@ public class UserController {
     public Result<UserRespDTO> getUserByName (@PathVariable("username") String username) {
         return Results.success(userService.getUserByUsername(username));
     }
+
     /**
      * 返回实际用户信息（未脱敏）
      */
@@ -51,7 +50,7 @@ public class UserController {
      * 用户注册
      * @param requestParam 用户信息表单
      */
-    @PostMapping("/api/short-link/v1/user")
+    @PostMapping("/api/short-link/v1/user/register")
     public Result<Void> register(@RequestBody UserRegisterReqDTO requestParam) {
         userService.register(requestParam);
         return Results.success();
@@ -85,5 +84,11 @@ public class UserController {
     @GetMapping("/api/short-link/v1/user/check-login/")
     public Result<Boolean> isLogged(@RequestParam String username, @RequestParam String token) {
         return Results.success(userService.isLogged(username, token));
+    }
+
+    @PostMapping("/api/short-link/v1/user/logout")
+    public Result<Void> logOut(@RequestParam String username, @RequestParam String token) {
+        userService.logOut(username, token);
+        return Results.success();
     }
 }

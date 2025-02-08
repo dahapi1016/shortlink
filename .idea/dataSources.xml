@@ -24,5 +24,16 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="unknown" uuid="ce5fb4c5-b90a-4586-a141-b956a38759a9">
+      <imported>true</imported>
+      <configured-by-url>true</configured-by-url>
+      <remarks>$PROJECT_DIR$/admin/src/main/resources/application.yaml</remarks>
+      <jdbc-driver>org.apache.shardingsphere.driver.ShardingSphereDriver</jdbc-driver>
+      <jdbc-url>jdbc:shardingsphere:classpath:shardingsphere-config.yaml</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
+      </jdbc-additional-properties>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>
