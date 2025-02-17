@@ -94,7 +94,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
         this.updateBatchById(list);
     }
 
-    boolean hasGid(String gid) {
+    private boolean hasGid(String gid) {
         LambdaQueryWrapper<GroupDO> wrapper = Wrappers.lambdaQuery(GroupDO.class)
                 .eq(GroupDO::getGid, gid)
                 .eq(GroupDO::getUsername, UserContext.getUsername());
@@ -102,7 +102,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
         return groupDO != null;
     }
 
-    boolean hasGroupName(String groupName) {
+    private boolean hasGroupName(String groupName) {
         LambdaQueryWrapper<GroupDO> wrapper = Wrappers.lambdaQuery(GroupDO.class)
                 .eq(GroupDO::getUsername, UserContext.getUsername())
                 .eq(GroupDO::getName, groupName)
