@@ -1,2 +1,19 @@
 server:
   port: 8003
+spring:
+  datasource:
+    username: root
+    password: 123456
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:shardingsphere-config.yaml
+    hikari:
+      connection-test-query: select 1
+      connection-timeout: 20000
+      idle-timeout: 300000
+      maximum-pool-size: 5
+      minimum-idle: 5
+  data:
+    redis:
+      host: 192.168.29.128
+      port: 6379
+      password: 123456

@@ -1,6 +1,6 @@
-package com.hapi.shortlink.admin.common.convention.errorcode;
+package com.hapi.shortlink.project.common.convention.errorcode;
 
-public enum UserErrorCode implements IErrorCode{
+public enum UserErrorCode implements IErrorCode {
 
     USER_NOT_FOUND("B000200", "用户不存在"),
     USER_NAME_EXIST_ERROR("B000201", "用户名已存在"),

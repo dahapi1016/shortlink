@@ -4,23 +4,17 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import java.io.Serializable;
-import java.util.Date;
+import lombok.EqualsAndHashCode;
 
 /**
  * 用户DO类
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("t_user")
-public class UserDO implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class UserDO extends BaseDO {
 
     @TableId(type = IdType.AUTO)
-    /*
-      idr
-     */
     private Long id;
 
     /**
@@ -52,21 +46,4 @@ public class UserDO implements Serializable {
      * 注销时间戳
      */
     private Long deletionTime;
-
-    /**
-     * 注册时间
-     */
-    private Date createTime;
-
-    /**
-     * 修改时间
-     */
-    private Date updateTime;
-
-    /**
-     * 注销标志位，0：未注销，1：已注销
-     */
-    private Integer delFlag;
-
-    public UserDO() {}
 }
