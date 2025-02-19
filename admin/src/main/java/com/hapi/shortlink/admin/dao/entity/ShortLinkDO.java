@@ -1,8 +1,12 @@
-package com.hapi.shortlink.project.dao.entity;
+package com.hapi.shortlink.admin.dao.entity;
+
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
@@ -15,7 +19,6 @@ import java.util.Date;
 @TableName("t_link")
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class ShortLinkDO extends BaseDO{
 
     /**

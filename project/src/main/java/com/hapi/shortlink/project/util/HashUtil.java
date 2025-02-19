@@ -2,8 +2,6 @@ package com.hapi.shortlink.project.util;
 
 import cn.hutool.core.lang.hash.MurmurHash;
 
-import java.util.UUID;
-
 /**
  * HASH 工具类
  */
@@ -29,7 +27,6 @@ public class HashUtil {
 
     public static String hashToBase62(String str) {
         int i = MurmurHash.hash32(str);
-        String string = UUID.randomUUID().toString();
         long num = i < 0 ? Integer.MAX_VALUE - (long) i : i;
         return convertDecToBase62(num);
     }

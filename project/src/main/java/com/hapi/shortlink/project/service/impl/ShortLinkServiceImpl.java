@@ -2,6 +2,7 @@ package com.hapi.shortlink.project.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,6 +12,7 @@ import com.hapi.shortlink.project.dao.entity.ShortLinkDO;
 import com.hapi.shortlink.project.dao.mapper.ShortLinkMapper;
 import com.hapi.shortlink.project.dto.req.ShortLinkCreateReqDTO;
 import com.hapi.shortlink.project.dto.req.ShortLinkPageReqDTO;
+import com.hapi.shortlink.project.dto.resp.ShortLinkCountRespDTO;
 import com.hapi.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
 import com.hapi.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.hapi.shortlink.project.service.ShortLinkService;
@@ -20,7 +22,10 @@ import org.redisson.api.RBloomFilter;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -62,6 +67,21 @@ public class ShortLinkServiceImpl extends ServiceImpl<ShortLinkMapper, ShortLink
                 .orderByDesc(BaseDO::getCreateTime);
         IPage<ShortLinkDO> result = baseMapper.selectPage(requestParam, wrapper);
         return result.convert(each -> BeanUtil.toBean(each, ShortLinkPageRespDTO.class));
+    }
+
+    @Override
+    public ShortLinkCountRespDTO getShortLinkCount(List<String> gidlist, String username) {
+        QueryWrapper<ShortLinkDO> wrapper = Wrappers.query(new ShortLinkDO())
+                .select( "gid, COUNT(*) AS count")
+                .in("gid", gidlist)
+                .eq("username", username)
+                .groupBy("gid");
+        List<Map<String, Object>> resultList = baseMapper.selectMaps(wrapper);
+        return new ShortLinkCountRespDTO(resultList.stream().
+                collect(Collectors.toMap(
+                        map -> (String) map.get("gid"), // 键：gid
+                        map -> (Long) map.get("count")  // 值：count
+                )));
     }
 
     private String getShortUrlSuffix(ShortLinkCreateReqDTO requestParam) {

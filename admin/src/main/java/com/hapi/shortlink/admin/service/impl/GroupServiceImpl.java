@@ -14,7 +14,9 @@ import com.hapi.shortlink.admin.dto.req.CreateGroupReqDTO;
 import com.hapi.shortlink.admin.dto.req.ShortLinkGroupSortReqDTO;
 import com.hapi.shortlink.admin.dto.req.ShortLinkGroupUpdateReqDTO;
 import com.hapi.shortlink.admin.dto.resp.ShortLinkGroupRespDTO;
+import com.hapi.shortlink.admin.remote.dto.ShortLinkRemoteService;
 import com.hapi.shortlink.admin.service.GroupService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +25,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implements GroupService {
+
+    //TODO 后续重构为Spring feign接口调用
+    ShortLinkRemoteService shortLinkRemoteService = new ShortLinkRemoteService() {
+    };
+
     @Override
     public void createGroup(CreateGroupReqDTO requestParam) {
+        createGroup(requestParam, UserContext.getUsername());
+    }
+
+    public void createGroup(CreateGroupReqDTO requestParam, String username) {
         if(hasGroupName(requestParam.getGroupName())) {
             throw new ServiceException("分组名重复！");
         }
@@ -36,7 +48,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
         GroupDO groupDO = GroupDO.builder()
                 .gid(gid)
                 .name(requestParam.getGroupName())
-                .username(UserContext.getUsername())
+                .username(username)
                 .sortOrder(0)
                 .build();
         baseMapper.insert(groupDO);
@@ -49,7 +61,14 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
                 .eq(GroupDO::getDelFlag, 0)
                 .orderByDesc(GroupDO::getSortOrder);
         List<GroupDO> groupDOList = baseMapper.selectList(wrapper);
-        return BeanUtil.copyToList(groupDOList, ShortLinkGroupRespDTO.class);
+
+        Map<String, Long> shortLinkCountMap = shortLinkRemoteService.getGroupShortLinkCount(groupDOList.stream()
+                .map(GroupDO::getGid)
+                .collect(Collectors.toList()), UserContext.getUsername())
+                .getData().getResultMap();
+        List<ShortLinkGroupRespDTO> shortLinkGroupRespDTOS = BeanUtil.copyToList(groupDOList, ShortLinkGroupRespDTO.class);
+        shortLinkGroupRespDTOS.forEach(dto -> dto.setShortLinkCount(shortLinkCountMap.getOrDefault(dto.getGid(), 0L)));
+        return shortLinkGroupRespDTOS;
     }
 
     @Override
