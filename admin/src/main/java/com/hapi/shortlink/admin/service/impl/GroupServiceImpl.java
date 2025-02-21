@@ -37,6 +37,7 @@ public class GroupServiceImpl extends ServiceImpl<GroupMapper, GroupDO> implemen
         createGroup(requestParam, UserContext.getUsername());
     }
 
+    @Override
     public void createGroup(CreateGroupReqDTO requestParam, String username) {
         if(hasGroupName(requestParam.getGroupName())) {
             throw new ServiceException("分组名重复！");

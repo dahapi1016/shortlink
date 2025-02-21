@@ -34,7 +34,7 @@ public class ShortLinkDO extends BaseDO{
     private String shortUri;
 
     /**
-     * 完整短链接r
+     * 完整短链接
      */
     private String fullShortUrl;
 

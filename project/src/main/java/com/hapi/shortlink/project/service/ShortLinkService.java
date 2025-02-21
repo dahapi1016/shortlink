@@ -8,7 +8,10 @@ import com.hapi.shortlink.project.dto.req.ShortLinkPageReqDTO;
 import com.hapi.shortlink.project.dto.resp.ShortLinkCountRespDTO;
 import com.hapi.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
 import com.hapi.shortlink.project.dto.resp.ShortLinkPageRespDTO;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ShortLinkService extends IService<ShortLinkDO> {
@@ -33,4 +36,12 @@ public interface ShortLinkService extends IService<ShortLinkDO> {
      * @return 短链接数量
      */
     ShortLinkCountRespDTO getShortLinkCount(List<String> gidlist, String username);
+
+    /**
+     * 跳转短链接
+     * @param shortUri 短链接URI
+     * @param request Http请求
+     * @param response Http响应
+     */
+    void redirectShortLink(String shortUri, ServletRequest request, ServletResponse response) throws IOException;
 }

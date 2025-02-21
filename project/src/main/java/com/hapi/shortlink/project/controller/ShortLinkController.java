@@ -9,9 +9,12 @@ import com.hapi.shortlink.project.dto.resp.ShortLinkCountRespDTO;
 import com.hapi.shortlink.project.dto.resp.ShortLinkCreateRespDTO;
 import com.hapi.shortlink.project.dto.resp.ShortLinkPageRespDTO;
 import com.hapi.shortlink.project.service.ShortLinkService;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -51,5 +54,16 @@ public class ShortLinkController {
     @GetMapping("/api/short-link/v1/count")
     public Result<ShortLinkCountRespDTO> getGroupShortLinkCount(@RequestParam List<String> gidList, @RequestParam String username) {
         return Results.success(shortLinkService.getShortLinkCount(gidList, username));
+    }
+
+    /**
+     * 跳转短链接
+     * @param shortUri 短链接URI
+     * @param request Http请求
+     * @param response Http响应
+     */
+    @GetMapping("/{short-uri}")
+    public void redirectShortLink(@PathVariable("short-uri") String shortUri, ServletRequest request, ServletResponse response) throws IOException {
+        shortLinkService.redirectShortLink(shortUri, request, response);
     }
 }

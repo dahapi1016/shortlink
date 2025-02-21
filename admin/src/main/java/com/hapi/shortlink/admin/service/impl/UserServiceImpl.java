@@ -12,11 +12,13 @@ import com.hapi.shortlink.admin.common.convention.exception.ServiceException;
 import com.hapi.shortlink.admin.common.user.UserContext;
 import com.hapi.shortlink.admin.dao.entity.UserDO;
 import com.hapi.shortlink.admin.dao.mapper.UserMapper;
+import com.hapi.shortlink.admin.dto.req.CreateGroupReqDTO;
 import com.hapi.shortlink.admin.dto.req.UserLoginReqDTO;
 import com.hapi.shortlink.admin.dto.req.UserRegisterReqDTO;
 import com.hapi.shortlink.admin.dto.req.UserUpdateReqDTO;
 import com.hapi.shortlink.admin.dto.resp.UserLoginRespDTO;
 import com.hapi.shortlink.admin.dto.resp.UserRespDTO;
+import com.hapi.shortlink.admin.service.GroupService;
 import com.hapi.shortlink.admin.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RBloomFilter;
@@ -44,6 +46,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
     private final RBloomFilter<String> userRegistrationBloomFilter;
     private final RedissonClient redissonClient;
     private final StringRedisTemplate stringRedisTemplate;
+    private final GroupService groupService;
 
     @Override
     public UserRespDTO getUserByUsername(String username) {
@@ -80,6 +83,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, UserDO> implements 
                         throw new ServiceException(USER_SAVE_ERROR);
                     }
                     userRegistrationBloomFilter.add(requestParam.getUsername());
+                    groupService.createGroup(new CreateGroupReqDTO("默认分组"), requestParam.getUsername());
                     return;
                 } catch (DuplicateKeyException e) {
                     throw new ServiceException("用户名重复");
